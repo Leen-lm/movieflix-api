@@ -1,6 +1,5 @@
 import express from "express";
 import { PrismaClient} from "@prisma/client"
-import { log } from "console";
 
 const port = 3000;
 const app = express();
@@ -53,13 +52,13 @@ app.put("/movies/:id", async (req, res) => {
     const id = Number(req.params.id);
 
     try{
-        const movie_id = await prisma.movie.findUnique({
+        const movieId = await prisma.movie.findUnique({
             where: {
                 id
             }
         });
 
-        if (!movie_id){
+        if (!movieId){
             return res.status(404).send({ message: "Filme não encontrado!" })
         }
 
@@ -84,9 +83,9 @@ app.delete("/movies/:id", async (req, res) => {
     const id = Number(req.params.id);
 
     try{     
-        const movie_id = await prisma.movie.findUnique({ where: { id } })
+        const movieId = await prisma.movie.findUnique({ where: { id } })
 
-        if(!movie_id) {
+        if(!movieId) {
             return res.status(404).send({ message: "Filme não encontrado!" })
         };
 
@@ -97,6 +96,7 @@ app.delete("/movies/:id", async (req, res) => {
         return res.status(500).send({ message: "Não foi possível remover o filme!" })
     }
 });
+
 
 app.listen(port, () => {
     console.log(`Servidor em execução na porta: ${port}`)
