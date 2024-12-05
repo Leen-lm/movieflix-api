@@ -12,12 +12,12 @@
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node": "^22.9.3",
-    "prisma": "^5.22.0",
+    "prisma": "^6.0.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "^6.0.1",
     "@types/swagger-ui-express": "^4.1.7",
     "express": "^4.21.1",
     "swagger-ui-express": "^5.0.1"
