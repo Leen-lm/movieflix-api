@@ -18,9 +18,23 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#components/schemas/Movie"
+                                    "type": "object",
+                                    "properties":{
+                                      "totalMovies":
+                                      {
+                                        "type": "integer",
+                                        "description": "Duração total dos filmes"
+                                    },
+                                        "averageDuration": {
+                                            "type": "integer",
+                                            "description": "Duração média dos filmes"
+                                        },
+                                        "movies": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#components/schemas/Movie"
+                                            }
+                                        }
                                     }
                                 }
                             }
