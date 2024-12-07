@@ -1,5 +1,5 @@
 import express from "express";
-import { PrismaClient} from "@prisma/client"
+import { Prisma, PrismaClient } from "@prisma/client"
 import swaggerUi from "swagger-ui-express"
 import swaggerDocument from "../swagger.json"
 
@@ -116,6 +116,40 @@ app.delete("/movies/:id", async (req, res) => {
         res.status(200).send();
     } catch(error) {
         return res.status(500).send({ message: "Não foi possível remover o filme!" })
+    }
+});
+
+app.get("/movies/sort", async (req, res) => {
+    const { sort } = req.query;
+
+    let orderBy: Prisma.MovieOrderByWithRelationInput | undefined;
+    if (sort === "title") {
+        orderBy = { title: "asc" };
+    } else if (sort === "release_date") {
+        orderBy = { release_date: "desc" };
+    } else if (sort === "duration") {
+        orderBy = { duration: "asc"}
+    } else {
+        orderBy = undefined;
+    }
+
+    try {
+        const movies = await prisma.movie.findMany({
+            orderBy,
+            include: {
+                genres: true,
+                languages: true,
+            },
+        });
+
+        if (movies.length === 0) {
+            return res.status(404).send({ message: "Nenhum filme encontrado." });
+        }
+
+        res.json(movies);
+    } catch (error) {
+        console.error("Erro ao buscar filmes:", error);
+        res.status(500).send({ message: "Houve um problema ao buscar os filmes." });
     }
 });
 
