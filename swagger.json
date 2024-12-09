@@ -143,6 +143,46 @@
                     }
                 }
             }
+        },
+        "/movies/sort": {
+            "get": {
+                "tags":["Movie"],
+                "summary": "Retornar lista ordenada de filmes",
+                "description": "Retorna uma lista de filmes ordenada com critérios",
+                "parameters": [
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Critérios de ordenação: title, release_date, duration",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": ["title", "release_date", "duration"]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Os filmes foram listados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref":"#components/schemas/Movie"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Falha ao encontrar filmes"
+                    },
+                    "500": {
+                        "description": "Falha ao ordenar filmes!"
+                    }
+                }
+            }
         }
     },
     "components": {
