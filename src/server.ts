@@ -152,6 +152,41 @@ app.get("/movies/sort", async (req, res) => {
         res.status(500).send({ message: "Houve um problema ao buscar os filmes." });
     }
 });
+app.get("/movies/language", async (req, res) => {
+    try {
+        const { language } = req.query;
+
+        if (!language) {
+            return res.status(400).json({ message: "O parâmetro 'language' é obrigatório." });
+        }
+
+        const languageName = String(language).trim();
+
+        const movies = await prisma.movie.findMany({
+            where: {
+                languages: {
+                        name: {
+                            equals: languageName,
+                            mode: "insensitive", // Busca case-insensitive
+                        },
+                    },
+                },
+            include: {
+                genres: true,
+                languages: true,
+            },
+        });
+
+        if (movies.length === 0) {
+            return res.status(404).json({ message: `Nenhum filme encontrado para a linguagem: ${languageName}` });
+        }
+
+        res.json(movies);
+    } catch (error) {
+        console.error("Erro ao buscar filmes pela linguagem:", error);
+        res.status(500).json({ message: "Erro ao buscar filmes pela linguagem!" });
+    }
+});
 
 app.get("/movies/:genreName", async (req, res) => {
     const genreName = req.params.genreName
@@ -181,6 +216,8 @@ app.get("/movies/:genreName", async (req, res) => {
         return res.status(500).send({ message: "Falha ao filtrar filmes pelo gênero!" })
     }
 })
+
+
 
 app.listen(port, () => {
     console.log(`Servidor em execução na porta: ${port}`)
