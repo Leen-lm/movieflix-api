@@ -154,6 +154,60 @@ app.get("/movies/sort", async (req, res) => {
         return errorResponse(res, 500, "Houve um problema ao buscar os filmes!")
     }
 });
+
+app.get("/movies/filtered", async (req, res) => {
+    try {
+        const { sort, language } = req.query;
+
+        const languageMap: Record<string, string> = {
+            en: "Inglês",
+            fr: "Francês",
+            ptbr: "Português",
+            jp: "Japonês",
+            esp: "Espanhol"
+        };
+        
+        if (!language || !languageMap[language]) {
+            return res.status(400).json({ message: "O parâmetro 'language' é obrigatório ou inválido." });
+        }
+
+        const selectedLanguage = languageMap[language]
+
+        const sortMap: Record<string, Prisma.MovieOrderByWithRelationInput> = {
+            title: { title: "asc"},
+            release_date: { release_date: "desc"},
+            duration: { duration: "asc"},
+        };
+
+        const orderBy = sort ? sortMap[sort] : undefined;
+        
+            const movies = await prisma.movie.findMany({
+                orderBy,
+                where: {
+                    languages: {
+                        name: {
+                            equals: selectedLanguage,
+                            mode: "insensitive",
+                        }
+                    }
+                },
+                include: {
+                    genres: true,
+                    languages: true,
+                },
+            });
+
+            if (movies.length === 0) {
+                return errorResponse(res, 404, "Nenhum filme encontrado!");
+            }
+
+            res.json(movies);
+        } catch (error) {
+            console.error("Erro ao buscar filmes:", error);
+            return errorResponse(res, 500, "Houve um problema ao buscar os filmes!")
+        }
+});
+
 app.get("/movies/language/:language", async (req, res) => {
     try {
         const languageMap = {
