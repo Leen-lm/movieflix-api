@@ -198,7 +198,7 @@ app.get("/movies/language/:language", async (req, res) => {
     }
 });
 
-app.get("/movies/:genreName", async (req, res) => {
+app.get("/movies/genres/:genreName", async (req, res) => {
     try{ 
         const genreName = req.params.genreName;
 
