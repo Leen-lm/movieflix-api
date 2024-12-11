@@ -210,21 +210,20 @@ app.get("/movies/filtered", async (req, res) => {
 
 app.get("/movies/language/:language", async (req, res) => {
     try {
-        const languageMap = {
+        const languageMap: Record<string, string> = {
             en: "Inglês",
             fr: "Francês",
             ptbr: "Português",
             jp: "Japonês",
             esp: "Espanhol"
-        } as const;
+        };
         
         const paramLanguage = req.params.language;
 
-        if (!(paramLanguage in languageMap)) {
+        const language = languageMap[paramLanguage];
+        if (!language) {
             return res.status(400).json({ message: "O parâmetro 'language' é obrigatório ou inválido." });
         }
-
-        const language = languageMap[paramLanguage as keyof typeof languageMap]
 
         const movies = await prisma.movie.findMany({
             where: {
