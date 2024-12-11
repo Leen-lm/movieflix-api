@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response} from "express";
 import { Prisma, PrismaClient } from "@prisma/client"
 import swaggerUi from "swagger-ui-express"
 import swaggerDocument from "../swagger.json"
@@ -6,14 +6,15 @@ import swaggerDocument from "../swagger.json"
 const port = 3000;
 const app = express();
 const prisma = new PrismaClient();
-const errorResponse = (res, code, message) => res.status(code).json({ message })
+
+const errorResponse = (res: Response, code: number, message: string, errors?: any) => res.status(code).json({ message, errors })
 
 
 app.use(express.json())
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 
-app.get("/movies", async (_, res) => {
+app.get("/movies", async (req: Request, res: Response) => {
     try{
         const movies = await prisma.movie.findMany({
             orderBy: {
@@ -44,7 +45,7 @@ app.get("/movies", async (_, res) => {
     }
 });
 
-app.post("/movies", async (req, res) => {
+app.post("/movies", async (req: Request, res: Response) => {
     const { title, genre_id, language_id, oscar_count, release_date } = req.body;
 
     try{
@@ -72,7 +73,7 @@ app.post("/movies", async (req, res) => {
     res.status(201).send();
 });
 
-app.put("/movies/:id", async (req, res) => {
+app.put("/movies/:id", async (req: Request, res: Response) => {
     const id = Number(req.params.id);
 
     try{
@@ -103,7 +104,7 @@ app.put("/movies/:id", async (req, res) => {
     };   
 });
 
-app.delete("/movies/:id", async (req, res) => {
+app.delete("/movies/:id", async (req: Request, res: Response) => {
     const id = Number(req.params.id);
 
     try{     
@@ -121,8 +122,13 @@ app.delete("/movies/:id", async (req, res) => {
     }
 });
 
-app.get("/movies/sort", async (req, res) => {
+app.get("/movies/sort", async (req: Request, res: Response) => {
     const { sort } = req.query;
+
+    const validSortOptions = ['title', 'release_date', 'duration']
+    if (sort && !validSortOptions.includes(sort as string)){
+        return res.status(400).json({ message: "Parâmetro 'sort' inválido." })
+    }
 
     let orderBy: Prisma.MovieOrderByWithRelationInput | undefined;
     if (sort === "title") {
@@ -155,7 +161,7 @@ app.get("/movies/sort", async (req, res) => {
     }
 });
 
-app.get("/movies/filtered", async (req, res) => {
+app.get("/movies/filtered", async (req: Request, res: Response) => {
     try {
         const { sort, language } = req.query;
 
@@ -208,7 +214,7 @@ app.get("/movies/filtered", async (req, res) => {
         }
 });
 
-app.get("/movies/language/:language", async (req, res) => {
+app.get("/movies/language/:language", async (req: Request, res: Response) => {
     try {
         const languageMap: Record<string, string> = {
             en: "Inglês",
@@ -251,7 +257,7 @@ app.get("/movies/language/:language", async (req, res) => {
     }
 });
 
-app.get("/movies/genres/:genreName", async (req, res) => {
+app.get("/movies/genres/:genreName", async (req: Request, res: Response) => {
     try{ 
         const genreName = req.params.genreName;
 
