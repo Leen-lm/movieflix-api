@@ -184,7 +184,7 @@
                 }
             }
         },
-        "/movies/language": {
+        "/movies/language/{language}": {
             "get": {
                 "tags":["Movie"],
                 "summary": "Buscar filmes por linguagem",
@@ -192,11 +192,12 @@
                 "parameters": [
                     {
                         "name": "language",
-                        "in": "query",
-                        "description": "Nome da linguagem para filtrar os filmes",
+                        "in": "path",
+                        "description": "Código do idioma. Valores aceitos: `en`, `fr`, `ptbr`, `jp`, `esp`.",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "enum": ["en", "fr", "ptbr", "jp", "esp"]
                         }
                     }
                 ],
